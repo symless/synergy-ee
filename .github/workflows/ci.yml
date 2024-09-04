@@ -69,12 +69,6 @@ jobs:
       - name: Get version
         uses: ./.github/actions/get-version
 
-      - name: Cache Chocolatey packages
-        uses: actions/cache@v4
-        with:
-          path: ${{ runner.temp }}/choco
-          key: choco-${{ hashFiles('Chocolatey.config') }}
-
       - name: Cache deps dir
         uses: actions/cache@v4
         with:
