@@ -23,7 +23,6 @@ on:
 
 env:
   GIT_SHA: ${{ github.sha }}
-  SYNERGY_VERSION: ${{ github.event.inputs.version || github.event.release.tag_name }}
   SYNERGY_PRODUCT_NAME: ${{ vars.SYNERGY_PRODUCT_NAME }}
   SYNERGY_PACKAGE_PREFIX: ${{ vars.SYNERGY_PACKAGE_PREFIX }}
   SYNERGY_LICENSED_PRODUCT: ${{ vars.SYNERGY_LICENSED_PRODUCT }}
@@ -67,6 +66,9 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: "recursive"
+
+      - name: Get version
+        uses: ./.github/actions/get-version
 
       - name: Cache Chocolatey packages
         uses: actions/cache@v4
@@ -151,6 +153,9 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: "recursive"
+
+      - name: Get version
+        uses: ./.github/actions/get-version
 
       - name: Cache deps dir
         uses: actions/cache@v4
@@ -271,6 +276,9 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: "recursive"
+
+      - name: Get version
+        uses: ./.github/actions/get-version
 
       - name: Config Git safe dir
         run: git config --global --add safe.directory $GITHUB_WORKSPACE

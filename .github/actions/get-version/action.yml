@@ -1,0 +1,12 @@
+name: "Get version"
+description: "Gets the version number from GitHub environment"
+
+runs:
+  using: "composite"
+
+  steps:
+    - run: |
+        if [[ "${{ github.ref_name }}" != "master" ]]; then
+          echo "SYNERGY_VERSION=${{ github.event.inputs.version || github.ref_name }}" >> $GITHUB_ENV
+        fi
+      shell: bash

@@ -1,4 +1,4 @@
-name: Create release
+name: Create tag
 
 on:
   workflow_dispatch:
@@ -8,8 +8,8 @@ on:
       - release/**
 
 jobs:
-  create-release:
-    if: ${{ vars.CREATE_RELEASE }}
+  create-tag:
+    if: ${{ vars.CREATE_TAGS }}
 
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -35,16 +35,19 @@ jobs:
           current-version: ${{ env.CURRENT_VERSION }}
           override-stage: ${{ env.OVERRIDE_STAGE }}
 
-      - name: Print next version
-        run: echo ${{ steps.next-version.outputs.next-version }}
+      - name: Create and push Git tag
+        run: |
+          git tag ${{ steps.next-version.outputs.next-version }}
+          git push origin ${{ steps.next-version.outputs.next-version }}
+        shell: bash
 
-      - name: Create release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.ORGANIZATION_TOKEN }}
+      - name: Trigger CI workflow
+        uses: actions/github-script@v7
         with:
-          tag_name: ${{ steps.next-version.outputs.next-version }}
-          release_name: ${{ steps.next-version.outputs.next-version }}
-          draft: false
-          prerelease: ${{ !startsWith(github.ref, 'refs/heads/release') }}
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'ci.yml',
+              ref: '${{ steps.next-version.outputs.next-version }}'
+            });
